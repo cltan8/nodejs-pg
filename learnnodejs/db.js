@@ -3,9 +3,9 @@ var pg = require('pg');
 
 var config = {
   host: 'localhost',
-  user: 'jarms', //env var: PGUSER
-  database: 'jarmsdb', //env var: PGDATABASE
-  password: 'jarms', //env var: PGPASSWORD
+  user: 'postgres', //env var: PGUSER
+  database: 'heytourguidedb', //env var: PGDATABASE
+  password: 'Hulk123!?', //env var: PGPASSWORD
   port: 5432, //env var: PGPORT
   max: 10, // max number of clients in the pool
   idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed

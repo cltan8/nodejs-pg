@@ -15,9 +15,7 @@ var tm = new tenantModel();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 9300;        // set our port
-
-var pool = require('./db');
+var port = process.env.PORT || 9400;        // set our port
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -41,153 +39,45 @@ router.get('/', function(req, res) {
 // ----------------------------------------------------
 router.route('/tenants')
 
-    // create a user (accessed at POST http://service:9300/api/tenants)
-    .post(function(req, res) {
+    // create a user (accessed at POST http://service:9400/api/tenants)
+//    .post(function(req, res) {
+//
+//
+//    })
 
-        pool.connect(function(err, client, done) {
-                const results = [];
-                if(err) {
-                        done();
-                        console.log(err);
-                        return res.status(500).json({success: false, data: err});
-                }
-                console.log("tenantName="+req.body.tenantname);
-                console.log("tenantArea="+req.body.tenantarea);
-                // SQL Query > Insert Data
-                client.query('INSERT INTO tenants(tenantName, tenantArea) values($1, $2)',[req.body.tenantname, req.body.tenantarea], function(err, result) {
-                        //call `done()` to release the client back to the pool
-                        done();
-                        if(err) {
-                                console.log(err);
-                                return res.status(500).json({success: false, data: err});
-                        }
-                        return res.json({success: true, message: "Tenant Created"});
-                });
-
-        });
-
-    })
-
-    // get all the users (accessed at GET http://service:9300/api/tenants)
+    // get all the users (accessed at GET http://service:9400/api/tenants)
     .get(function(req, res) {
-
-        pool.connect(function(err, client, done) {
-
-                if(err) {
-                        done();
-                        console.log(err);
-                        return res.status(500).json({success: false, data: err});
-                }
-
-                client.query('SELECT * FROM tenants ORDER BY tenantName ASC', function(err, result) {
-                        //call `done()` to release the client back to the pool
-                        done();
-
-                        if(err) {
-                                console.log(err);
-                                return res.status(500).json({success: false, data: err});
-                        }
-
-                        return res.json(result.rows);
-
-                });
-
+		
+        tm.g(req, function(err, result) {
+            if (err) {
+                return res.status(500).json({success: false, data: err});
+            }
+            return res.status(200).json({success: true, data: result});
         });
 
      });
 
 
-// on routes that end in /users/:userid
+// on routes that end in /tenants/:tenantid
 // ----------------------------------------------------
-router.route('/users/:userid')
-
-    // get the user information with this id (accessed at GET http://localhost:9100/api/users/:userid)
-    .get(function(req, res) {
-
-        pool.connect(function(err, client, done) {
-
-                if(err) {
-                        done();
-                        console.log(err);
-                        return res.status(500).json({success: false, data: err});
-                }
-
-                console.log("userid="+req.params.userid);
-
-                client.query('SELECT * FROM users WHERE alogin=$1',[req.params.userid], function(err, result) {
-                        //call `done()` to release the client back to the pool
-                        done();
-
-                        if(err) {
-                                console.log(err);
-                                return res.status(500).json({success: false, data: err});
-                        }
-
-                        return res.json(result.rows);
-                });
-
-        });
-
-    })
-
-    // update the user with this id (accessed at PUT http://localhost:9100/api/users/:userid)
-    .put(function(req, res) {
-
-        pool.connect(function(err, client, done) {
-
-                if(err) {
-                        done();
-                        console.log(err);
-                        return res.status(500).json({success: false, data: err});
-                }
-
-                console.log("userid="+req.body.isadmin);
-                console.log("userid="+req.params.userid);
-
-                client.query('UPDATE users SET isadmin=$1 WHERE alogin=$2',[req.body.isadmin, req.params.userid], function(err, result) {
-                        //call `done()` to release the client back to the pool
-                        done();
-
-                        if(err) {
-                                console.log(err);
-                                return res.status(500).json({success: false, data: err});
-                        }
-
-                        return res.json({success: true, message: "User isadmin updated"});
-                });
-
-        });
-
-     })
-
-    // delete the user with this id (accessed at DELETE http://localhost:9100/api/users/:userid)
-    .delete(function(req, res) {
-
-        pool.connect(function(err, client, done) {
-
-                if(err) {
-                        done();
-                        console.log(err);
-                        return res.status(500).json({success: false, data: err});
-                }
-
-                console.log("userid="+req.params.userid);
-
-                client.query('DELETE FROM users WHERE alogin=$1',[req.params.userid], function(err, result) {
-                        //call `done()` to release the client back to the pool
-                        done();
-
-                        if(err) {
-                                console.log(err);
-                                return res.status(500).json({success: false, data: err});
-                        }
-
-                        return res.json({success: true, message: "User Deleted"});
-                });
-
-        });
-
-     });
+//router.route('/tenants/:tenantid')
+//
+//    // get the user information with this id (accessed at GET http://service:9400/api/tenants/:tenantid)
+//    .get(function(req, res) {
+//
+//    })
+//
+//    // update the user with this id (accessed at PUT http://service:9400/api/tenants/:tenantid)
+//    .put(function(req, res) {
+//
+//
+//     })
+//
+//    // delete the user with this id (accessed at DELETE http://service:9400/api/tenants/:tenantid)
+//    .delete(function(req, res) {
+//
+//
+//     });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

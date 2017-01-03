@@ -1,84 +1,37 @@
 /** tenantModel.js **/
 
-var pool = require('./db');
+var Dbsql = require('./dbsql.js');
+var dbsql = new Dbsql();
 
-var Tenant = function (data) {  
-    this.data = data;
-}
+var Tenant = function () {};
 
-Tenant.prototype.data = {}
-
-Tenant.prototype.changeName = function (name) {  
-    this.data.name = name;
-}
-
-# Static
-Tenant.findById = function (id, callback) {  
-    db.get('users', {id: id}).run(function (err, data) {
-        if (err) return callback(err);
-        callback(null, new User(data));
+Tenant.prototype.d = function (req, callback) {  
+    var sql = "DELETE FROM users WHERE sid = $1";
+    var data = [];
+    data.push(req.body.userid);
+    dbsql.execsqlworswd(sql, data, function(err, result) {
+        if (err) {
+            callback(err, result);
+        }
+        callback(null, result); 
     });
 }
 
-Tenant.prototype.d = function (callback) {  
-    var self = this;
-
-	pool.connect(function(err, client, done) {
-
-                if(err) {
-                        done();
-                        console.log(err);
-                        return res.status(500).json({success: false, data: err});
-                }
-
-                console.log("sid="+data.tenantId);
-
-                client.query('DELETE FROM tenants WHERE sid=$1',[data.tenantId], function(err, result) {
-                        //call `done()` to release the client back to the pool
-                        done();
-
-                        if(err) {
-                                console.log(err);
-                                return res.status(500).json({success: false, data: err});
-                        }
-
-                        return res.json({success: true, message: "User Deleted"});
-                });
-
-        });
-}
-
-Tenant.prototype.g = function (callback) {  
-    var self = this;
-    db.get('users', {id: this.data.id}).update(JSON.stringify(this.data)).run(function (err, result) {
-        if (err) return callback(err);
-        callback(null, self); 
+Tenant.prototype.g = function (req, callback) {  
+    var sql = "SELECT * FROM users";    
+    dbsql.execsqlwrswod(sql, function(err, result) {
+        if (err) {
+            callback(err, result);
+        }
+        callback(null, result);    
     });
 }
 
-Tenant.prototype.s = function (callback) {  
-    var self = this;
-    db.get('users', {id: this.data.id}).update(JSON.stringify(this.data)).run(function (err, result) {
-        if (err) return callback(err);
-        callback(null, self); 
-    });
-}
+/*Tenant.prototype.s = function (callback) {  
+}*/
 
-Tenant.prototype.u = function (callback) {  
-    var self = this;
-    db.get('users', {id: this.data.id}).update(JSON.stringify(this.data)).run(function (err, result) {
-        if (err) return callback(err);
-        callback(null, self); 
-    });
-}
-
-Tenant.prototype.get = function (name) {  
-    return this.data[name];
-}
-
-Tenant.prototype.set = function (name, value) {  
-    this.data[name] = value;
-}
+/*Tenant.prototype.u = function (callback) {  
+}*/
 
 module.exports = Tenant;
 
